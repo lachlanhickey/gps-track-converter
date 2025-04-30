@@ -31,13 +31,30 @@ class GpsTrackConverter
         $lineString = $this->coordinatesToLineString($coordinates);
         $densifiedLineString = $this->densifyLineString($lineString, 100); // 100 meters
         
-        return [
-            'lineString' => $densifiedLineString,
-            'totalDistance' => $this->calculateTotalDistance($densifiedLineString),
-            'distanceFromStart' => $this->calculateDistanceFromStart($densifiedLineString),
-            'originalPointCount' => count($lineString),
-            'densifiedPointCount' => count($densifiedLineString)
-        ];
+        // Calculate the distances from start
+        $distancesFromStart = $this->calculateDistanceFromStart($densifiedLineString);
+        
+        // Create the formatted array of objects
+        $formattedLineString = [];
+        foreach ($densifiedLineString as $index => $point) {
+            // Create a standard class object for each point
+            $pointObject = new \stdClass();
+            $pointObject->lat = $point['lat'];
+            $pointObject->lon = $point['lon'];
+            $pointObject->elevation = $point['ele'];
+            $pointObject->distance_from_start = $distancesFromStart[$index];
+            
+            $formattedLineString[] = $pointObject;
+        }
+        
+        // Create a result object
+        $result = new \stdClass();
+        $result->points = $formattedLineString;
+        $result->totalDistance = $this->calculateTotalDistance($densifiedLineString);
+        $result->originalPointCount = count($lineString);
+        $result->densifiedPointCount = count($densifiedLineString);
+        
+        return $result;
     }
 
     /**
