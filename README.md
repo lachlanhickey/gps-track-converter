@@ -21,7 +21,7 @@ A PHP package for converting GPX, KMZ, and KML files to LineString format with d
 ## Installation
 
 ```bash
-composer require app/gps-track-converter
+composer require lachlan-hickey/gps-track-converter
 ```
 
 Or add this to your `composer.json` and run `composer install`:
@@ -29,7 +29,7 @@ Or add this to your `composer.json` and run `composer install`:
 ```json
 {
     "require": {
-        "app/gps-track-converter": "^1.0"
+        "lachlan-hickey/gps-track-converter": "^1.0"
     }
 }
 ```
