@@ -48,11 +48,34 @@ $result = $converter->convert('/path/to/track.gpx');
 $points = $result->points; // Array of point objects
 $totalDistance = $result->totalDistance; // in meters
 
+// Access start and finish locations directly
+$startPoint = $result->start_location;
+$finishPoint = $result->finish_location;
+
+echo "Route starts at: {$startPoint->lat}, {$startPoint->lon}";
+echo "Route ends at: {$finishPoint->lat}, {$finishPoint->lon}";
+echo "Total distance: {$result->totalDistance} meters";
+
 // Access individual point data
 $firstPoint = $points[0];
 echo "First point: Lat: {$firstPoint->lat}, Lon: {$firstPoint->lon}, " .
      "Elevation: {$firstPoint->elevation}, " .
-     "Distance from start: {$firstPoint->distance_from_start} meters";
+     "Distance from start: {$firstPoint->distance_from_start} meters, " .
+     "Distance from previous: {$firstPoint->distance_from_previous} meters";
+
+// Calculate average segment length
+$totalSegments = count($points) - 1;
+$averageSegmentLength = 0;
+
+if ($totalSegments > 0) {
+    $totalSegmentLength = 0;
+    foreach ($points as $point) {
+        $totalSegmentLength += $point->distance_from_previous;
+    }
+    $averageSegmentLength = $totalSegmentLength / $totalSegments;
+}
+
+echo "Average segment length: {$averageSegmentLength} meters";
 ```
 
 ### Laravel Controller Example
@@ -105,18 +128,34 @@ stdClass Object (
             [lon] => 8.123456
             [elevation] => 1234.5
             [distance_from_start] => 0 // in meters
+            [distance_from_previous] => 0 // First point has 0 distance from previous
         )
         [1] => stdClass Object (
             [lat] => 47.124567
             [lon] => 8.124567
             [elevation] => 1235.5
             [distance_from_start] => 100.0 // in meters
+            [distance_from_previous] => 100.0 // in meters
         )
         // More points...
     )
     [totalDistance] => 12345.67 // Total distance in meters
     [originalPointCount] => 120
     [densifiedPointCount] => 245
+    [start_location] => stdClass Object (
+        [lat] => 47.123456
+        [lon] => 8.123456
+        [elevation] => 1234.5
+        [distance_from_start] => 0
+        [distance_from_previous] => 0
+    )
+    [finish_location] => stdClass Object (
+        [lat] => 47.129876
+        [lon] => 8.129876
+        [elevation] => 1240.5
+        [distance_from_start] => 12345.67
+        [distance_from_previous] => 100.0
+    )
 )
 ```
 

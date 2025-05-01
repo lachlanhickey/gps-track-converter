@@ -34,6 +34,9 @@ class GpsTrackConverter
         // Calculate the distances from start
         $distancesFromStart = $this->calculateDistanceFromStart($densifiedLineString);
         
+        // Calculate distances from previous point
+        $distancesFromPrevious = $this->calculateDistanceFromPrevious($densifiedLineString);
+        
         // Create the formatted array of objects
         $formattedLineString = [];
         foreach ($densifiedLineString as $index => $point) {
@@ -43,8 +46,18 @@ class GpsTrackConverter
             $pointObject->lon = $point['lon'];
             $pointObject->elevation = $point['ele'];
             $pointObject->distance_from_start = $distancesFromStart[$index];
+            $pointObject->distance_from_previous = $distancesFromPrevious[$index];
             
             $formattedLineString[] = $pointObject;
+        }
+        
+        // Create start and finish location objects
+        $startLocation = null;
+        $finishLocation = null;
+        
+        if (!empty($formattedLineString)) {
+            $startLocation = clone $formattedLineString[0];
+            $finishLocation = clone $formattedLineString[count($formattedLineString) - 1];
         }
         
         // Create a result object
@@ -53,8 +66,28 @@ class GpsTrackConverter
         $result->totalDistance = $this->calculateTotalDistance($densifiedLineString);
         $result->originalPointCount = count($lineString);
         $result->densifiedPointCount = count($densifiedLineString);
+        $result->start_location = $startLocation;
+        $result->finish_location = $finishLocation;
         
         return $result;
+    }
+    
+    /**
+     * Calculate distance from previous point for each point in LineString
+     *
+     * @param array $lineString
+     * @return array
+     */
+    private function calculateDistanceFromPrevious($lineString)
+    {
+        $distancesFromPrevious = [0]; // First point has no previous point, so distance is 0
+        
+        for ($i = 1; $i < count($lineString); $i++) {
+            $segmentDistance = $this->calculateDistanceBetweenPoints($lineString[$i-1], $lineString[$i]);
+            $distancesFromPrevious[] = $segmentDistance;
+        }
+        
+        return $distancesFromPrevious;
     }
 
     /**
