@@ -47,23 +47,12 @@ class GpsTrackConverter
             $formattedLineString[] = $pointObject;
         }
         
-        // Create start and finish location objects
-        $startLocation = null;
-        $finishLocation = null;
-        
-        if (!empty($formattedLineString)) {
-            $startLocation = clone $formattedLineString[0];
-            $finishLocation = clone $formattedLineString[count($formattedLineString) - 1];
-        }
-        
         // Create a result object
         $result = new \stdClass();
         $result->points = $formattedLineString;
         $result->totalDistance = $this->calculateTotalDistance($densifiedLineString);
         $result->originalPointCount = count($lineString);
         $result->densifiedPointCount = count($densifiedLineString);
-        $result->start_location = $startLocation;
-        $result->finish_location = $finishLocation;
         
         return $result;
     }

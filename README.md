@@ -48,14 +48,6 @@ $result = $converter->convert('/path/to/track.gpx');
 $points = $result->points; // Array of point objects
 $totalDistance = $result->totalDistance; // in meters
 
-// Access start and finish locations directly
-$startPoint = $result->start_location;
-$finishPoint = $result->finish_location;
-
-echo "Route starts at: {$startPoint->lat}, {$startPoint->lon}";
-echo "Route ends at: {$finishPoint->lat}, {$finishPoint->lon}";
-echo "Total distance: {$result->totalDistance} meters";
-
 // Access individual point data
 $firstPoint = $points[0];
 echo "First point: Lat: {$firstPoint->lat}, Lon: {$firstPoint->lon}, " .
@@ -125,18 +117,6 @@ stdClass Object (
     [totalDistance] => 12345.67 // Total distance in meters
     [originalPointCount] => 120
     [densifiedPointCount] => 245
-    [start_location] => stdClass Object (
-        [lat] => 47.123456
-        [lon] => 8.123456
-        [elevation] => 1234.5
-        [distance_from_start] => 0
-    )
-    [finish_location] => stdClass Object (
-        [lat] => 47.129876
-        [lon] => 8.129876
-        [elevation] => 1240.5
-        [distance_from_start] => 12345.67
-    )
 )
 ```
 
